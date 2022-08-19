@@ -31,8 +31,10 @@ public class Main {
         writeString(json, "data.json");
 
         // XmlJsonParser
-//        List<Employee> list2 = parseXML("data.xml");
-        parseXML("data.xml");
+        List<Employee> list2 = parseXML("data.xml");
+        String json1 = listToJson(list2);
+        writeString(json1, "data2.json");
+
 
     }
 
@@ -54,32 +56,56 @@ public class Main {
         return list;
     }
 
-    public static void parseXML(String fileName) throws ParserConfigurationException, IOException, SAXException {
+    public static List<Employee> parseXML(String fileName) throws ParserConfigurationException, IOException, SAXException {
+        List<Employee> list = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(new File(fileName));
         Node root = doc.getDocumentElement();
-        System.out.println("Корневой элемент: " + root.getNodeName());
-        read(root);
+        NodeList nodeList = root.getChildNodes();
+        long id = 0;
+        int age = 0;
+        String firstName = null;
+        String lastName = null;
+        String country = null;
+
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            NodeList nodeItem = nodeList.item(i).getChildNodes();
+            if (nodeItem.getLength() > 0) {
+                for (int j = 0; j < nodeItem.getLength(); j++) {
+                    switch (nodeItem.item(j).getNodeName()) {
+                        case "id":
+                            id = Integer.parseInt(nodeItem.item(j).getTextContent());
+                            break;
+                        case "firstName":
+                            firstName = nodeItem.item(j).getTextContent();
+                            break;
+                        case "lastName":
+                            lastName = nodeItem.item(j).getTextContent();
+                            break;
+                        case "country":
+                            country = nodeItem.item(j).getTextContent();
+                            break;
+                        case "age":
+                            age = Integer.parseInt(nodeItem.item(j).getTextContent());
+                            break;
+                    }
+                }
+            }
+            if (id != 0) {
+                Employee employee = new Employee(id, firstName, lastName, country, age);
+                list.add(employee);
+            }
+            id = 0;
+            age = 0;
+            firstName = null;
+            lastName = null;
+            country = null;
+
+        }
+        return list;
     }
 
-    public static void read(Node node) {
-        NodeList nodeList = node.getChildNodes();
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node node_ = nodeList.item(i);
-            if (Node.ELEMENT_NODE == node_.getNodeType()) {
-                System.out.println("Текущий узел: " + node_.getNodeName());
-                Element element = (Element) node_;
-                NamedNodeMap map = element.getAttributes();
-                for (int a = 0; a < map.getLength(); a++) {
-                    String attrName = map.item(a).getNodeName();
-                    String attrValue = map.item(a).getNodeValue();
-                    System.out.println("Атрибут: " + attrName + "; значение: " + attrValue);
-                }
-                read(node_);
-            }
-        }
-    }
 
     public static String listToJson(List<Employee> list) {
         StringBuilder sb = new StringBuilder();
