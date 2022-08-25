@@ -1,13 +1,11 @@
 import org.junit.jupiter.api.*;
 
-import javax.swing.*;
-import java.sql.ClientInfoStatus;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CsvJsonParserTest {
+public class MainTests {
     Employee employee1 = new Employee(1,"John","Smith","USA",25);
     Employee employee2 = new Employee(2,"Inav","Petrov","RU",23);
 
